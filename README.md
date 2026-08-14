@@ -1,19 +1,19 @@
-<!-- Replace every <PLACEHOLDER>. Delete this comment and the notes in < > when done.
+<!-- The headline below is deliberately not written yet: the finding belongs to phase 4.
      This file is public and in English: it is the front door of the evidence layer (L3). -->
 
-# <THE FINDING IN ONE SENTENCE — not the topic>
+# The football transfer market: who pays whom, and what age costs
 
-> <2-3 sentences: what was found, with the numbers that carry it. This is the same
-> claim as the `summary` field of the site's front-matter — do not write two versions.>
+> **Work in progress — phase 0 of 7 complete.** This case asks whether the gap between
+> net-buying and net-selling clubs has widened, and whether the premium paid for players aged
+> 17–21 has grown faster than the market itself. The headline finding goes here once phase 4
+> closes; until then this repository is a log of the work, not a conclusion.
 
-`<Tool>` `<Library>` `<N rows>` `<N sources>`
-
-**Full case, findings and recommendations →
-[juanesportfolio.com/cases/<slug>](https://juanesportfolio.com/cases/<slug>/)**
+`SQL` `DuckDB` `2 sources`
 
 This repository is the case's evidence layer: the full phase-by-phase log, the cleaning log,
-source records, reproducible scripts, and the technical notebook. The narrative — context, data,
-process, findings, recommendations — lives on the site linked above.
+source records and reproducible scripts. The narrative — context, data, process, findings,
+recommendations — will live on [juanesportfolio.com](https://juanesportfolio.com/) once the case
+is published.
 
 ## What's here
 
@@ -35,27 +35,32 @@ process, findings, recommendations — lives on the site linked above.
 
 ## Data
 
-| Source | Period | Volume | Licence |
-|---|---|---|---|
-| <Source name and link> | <period> | <N rows> | <licence> |
+Two sources doing two different jobs. They are never joined at record level.
 
-<One line on why this source can answer the question, and one on what it cannot answer.>
+| Source | Job | Period | Licence |
+|---|---|---|---|
+| [FIFA Global Transfer Report](https://inside.fifa.com/transfer-system/global-transfer-report) (FIFA TMS) | The decade-long series and the age axis | annual, 2011– | FIFA publication; aggregate figures transcribed with citation |
+| [`dcaribou/transfermarkt-datasets`](https://github.com/dcaribou/transfermarkt-datasets) | Deal-level detail: clubs, players, fees | 22/23–25/26 | CC0-1.0 |
+
+FIFA's report is the official **census** of international transfers, so it carries no survivorship
+bias and can anchor a decade of context — but it publishes aggregates only, so it can never name
+a club. The Transfermarkt dataset names every club and player, which is what makes a buyer/seller
+gap computable — but its history is rebuilt from players present today, so its coverage thins
+going backwards and does so differentially by age. Hence the 22/23 cut-off. Both limits are
+documented in `CASO.md`.
 
 ## Reproduce
 
 ```bash
 # 1. Clone
-git clone https://github.com/<user>/<repo>.git
-cd <repo>
+git clone https://github.com/BobbyTarantino099/football-transfer-market.git
+cd football-transfer-market
 
 # 2. Dependencies
 pip install -r requirements.txt
-npm install --prefix notebooks        # only if the case builds a .pptx
 
-# 3. Download the raw file (not in the repo)
-#    <source URL>
-#    Save it as:
-#    datos/crudos/<origen_tema_periodo_version>.csv
+# 3. Download the raw data (not in the repo)
+#    See documentacion/fichas-de-fuente.md for exact URLs and filenames.
 
 # 4. Run in order — each step consumes the previous one's output
 python notebooks/procesar.py    # cleaning  -> datos/limpios/
@@ -64,7 +69,7 @@ python notebooks/verificar.py   # the analysis checks
 python notebooks/graficos.py    # the figures -> salidas/graficos/
 ```
 
-Before making this repository public:
+Before publishing any result:
 
 ```bash
 bash scripts/verificar-rutas.sh
@@ -72,4 +77,4 @@ bash scripts/verificar-rutas.sh
 
 ---
 
-*<Fictional client, real analysis.> Data from <source>, <licence>.*
+*Fictional client, real analysis. Data from FIFA TMS and Transfermarkt.*

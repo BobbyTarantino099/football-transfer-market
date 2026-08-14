@@ -1,10 +1,11 @@
 # Dependencies of the case pipeline.
 #
-# These four are what the scripts actually import — not an aspirational list.
+# These are what the scripts actually import — not an aspirational list.
 # Check with:  grep -rhE "^(import|from) " notebooks/*.py | sort -u
 #
 # Install:  pip install -r requirements.txt
 
+duckdb          # the analysis engine: every query in this case runs on DuckDB
 pandas          # procesar · analizar · verificar · graficos
 numpy           # procesar · analizar · verificar · graficos
 matplotlib      # graficos · estilo
