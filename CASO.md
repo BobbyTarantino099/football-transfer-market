@@ -5,7 +5,7 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 1 — Ask (complete). Next: phase 2, Prepare.
+**Status:** Phase 2 — Prepare (complete). Next: phase 3, Process.
 **Last updated:** 2026-08-14
 
 ## 0. Choose (decision sheet)
@@ -201,12 +201,112 @@ in three or four seasons out of four is a position, not a coincidence.
 
 ## 2. Prepare
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-14
 
 - **Sources:** one ROCCC record per source in `documentacion/fichas-de-fuente.md`.
 - **Data dictionary:** `documentacion/diccionario-de-datos.md`.
-- **Licence and privacy:** <no personal data, licence allows publication>
-- **Raw filename:** `datos/crudos/<origen_tema_periodo_version>.csv`
+
+### The fields the question demands, written before looking
+
+| Need | Granularity | Period | Where it comes from |
+|---|---|---|---|
+| Fee paid | per deal | 4 seasons | B `transfer_fee` |
+| Player age at transfer | per deal | 4 seasons | B `date_of_birth` + `transfer_date` |
+| Both clubs, identifiable, with country | per deal | 4 seasons | B `clubes` → `competiciones` |
+| Spend by age band | per year | a decade | A, transcribed |
+| Market size | per year | a decade | A `total_fee_usd_bn` |
+| Clubs paying vs receiving | per year | a decade | A |
+
+Classification: **A** is first-party, external, structured, quantitative and longitudinal — but
+aggregate. **B** is third-party, external, structured, quantitative and longitudinal at deal level.
+Neither is first-party to us; both are external and public.
+
+### The two universes, and why there are two
+
+Coverage of the `clubes` table is partial, and *not at random*. In the window, priced deals split:
+
+| | Deals | % of spend | Mean age | 18–23 share | Median fee |
+|---|---|---|---|---|---|
+| Both clubs identified | 5,977 | 93.0% | 24.8 | 38.8% | 2.2M€ |
+| Only the buyer identified | 1,579 | 4.8% | 23.0 | **60.2%** | 0.5M€ |
+| Only the seller identified | 406 | 1.5% | 25.4 | 31.8% | 0.6M€ |
+| Neither | 518 | 0.7% | 22.7 | 51.7% | 0.3M€ |
+
+Keeping only "both identified" would have been the obvious move and the wrong one: that block is
+the oldest and most expensive, while the deals it discards are the cheap purchases of young talent
+from clubs outside the covered competitions — the exact phenomenon under study. So:
+
+- **U1** — at least one club identified and European. Basis for M3, M4, M5.
+  **6,716 deals · €37,435m** across the four seasons.
+- **U2** — both clubs identified, at least one European. Basis for M1 and M2, which have to
+  attribute spend to a named club. **5,109 deals · €35,414m**, i.e. 94.6% of U1's money.
+
+Every published figure states which universe it came from. "European" is decided by the source's
+own `confederation` field, not by player nationality.
+
+### Biases, in writing
+
+- **Survivorship** — quantified in §0 and answered with the 22/23 cut-off. This is the one that
+  would have inverted the conclusion.
+- **Sampling** — partial club coverage, non-random by age and price. Answered with the two
+  universes above rather than by dropping the inconvenient rows.
+- **Observer** — Transfermarkt *estimates* market values but *reports* fees. Only fees are used;
+  estimated values are out of scope (§1).
+- **Confirmation** — the hypothesis is written in §1 before any analysis. The countermeasure is
+  stated too: if the result confirms it too cleanly, it gets checked harder, not less.
+- **Interpretation** — the nominal/normalised trap. Every figure is a share of its own season.
+
+### Licence, privacy, security, accessibility
+
+- **Licence.** B is CC0-1.0, verified via the GitHub API. A has no open licence: aggregate figures
+  are transcribed and cited, and the PDFs are not redistributed.
+- **Privacy.** No sensitive personal data. Player names and dates of birth are published facts
+  about public figures; no contact details, no private individuals' salaries.
+- **Security.** Nothing confidential; all inputs are public and the snapshot lives in the repo.
+- **Accessibility.** Anyone can rebuild this: `git clone` gives the frozen snapshot, the FIFA CSVs
+  and `notebooks/descargar.py`. No account, no key, no cloud. SHA-256 of each file is recorded in
+  the source record so a reproducer can tell "newer snapshot" from "bug".
+
+### Integrity test on the final window
+
+| Season | U1 deals | U1 spend | U2 deals | U2 spend |
+|---|---|---|---|---|
+| 22/23 | 1,359 | €7,460m | 1,070 | €7,092m |
+| 23/24 | 1,651 | €9,508m | 1,251 | €8,993m |
+| 24/25 | 1,780 | €9,225m | 1,329 | €8,626m |
+| 25/26 | 1,926 | €11,242m | 1,459 | €10,703m |
+
+Key unique (0 duplicates), age computable on every row of the window, future-dated moves excluded,
+extremes plausible.
+
+**External cross-check — and the rule it produces.** Our 18–23 spending share against FIFA's:
+
+| | 22/23 | 23/24 | 24/25 | 25/26 |
+|---|---|---|---|---|
+| Source B (U1) | 50.7% | 45.7% | 47.2% | 47.1% |
+| Source A (calendar year) | 54.4% | 50.8% | 52.2% | 55.1% |
+
+Same order of magnitude, but B runs 4–8 points low every year, and B's under-18 share is three to
+five times smaller than the census. Expected: FIFA counts only *international* transfers while B
+also includes domestic ones, and seasons are not calendar years. The consequence is a rule for
+phase 4: **claims about level come from A; claims about who from B.**
+
+### Can these data answer the phase 1 question?
+
+| Metric | Computable | On what |
+|---|---|---|
+| M1 · Top-10 buyer concentration | ✅ | U2 |
+| M2 · Net-seller persistence | ✅ | U2 |
+| M3 · Age-band spend share | ✅ | A 2018–2025 · B on U1 |
+| M4 · Youth price ratio | ✅ | U1 (median; mean too, to compare against A) |
+| M5 · Season market size | ✅ | both |
+
+No metric had to be dropped, so the case does not go back to phase 1.
+
+**Open question carried to phase 4** (Juanes, 2026-08-14): what outliers sit behind the jump from
+41.3% to over 50% in the youth spending share? Answerable only in part — the 2018→2019 shift is
+visible solely in source A, which never names a deal. What *can* be examined is the expensive
+young-player outliers within 22/23–25/26, where source B has deal-level detail.
 
 ## 3. Process
 
@@ -264,3 +364,8 @@ from a gallery of charts: it shows what was discarded and why.>
 | 2026-08-14 | The gap is measured as concentration **plus** persistence of role, not net spend alone | Net spend describes clubs; persistence describes the structure, which is what a capital decision turns on | A Gini or HHI — more rigorous, but needs translating for an investment committee, and translation costs minutes on stage |
 | 2026-08-14 | Median, not mean, for fee comparisons | FIFA reports 3.8% of deals carrying nearly half of global spending; a mean would track a handful of moves | The mean — easier to explain, and wrong here |
 | 2026-08-14 | Fee-to-market-value multiples left out of scope | Transfermarkt valuations react to transfer rumours, so the multiple would partly measure its own input | Using them as the premium metric — the most intuitive framing, and circular |
+| 2026-08-14 | Two universes (U1, U2) instead of one | Deals with only the buyer identified are 60% aged 18–23 at a quarter of the median price; dropping them would have removed the phenomenon under study | A single "both clubs identified" universe — 93% of the money, and biased against exactly the young cheap deals |
+| 2026-08-14 | The Transfermarkt snapshot is versioned in the repo (9.3 MB) | Upstream refreshes weekly; without freezing it the case stops reproducing within a month | A download script plus recorded hashes — reproducers could detect a difference but not undo it |
+| 2026-08-14 | FIFA age series starts in 2018 | The 2016 edition reports age year by year, not in bands, and 2017 publishes no fee by band | Reconstructing 2016–17 from a different structure — two more years, both invented |
+| 2026-08-14 | "European" comes from the source's `confederation` field | A hand-built UEFA table agreed with it exactly, so it was deleted rather than kept as a second thing to maintain | Keeping our own country table — one more artefact to drift |
+| 2026-08-14 | Level claims from source A, "who" claims from source B | B's youth share runs 4–8 points below the census every year, because it also counts domestic deals | Trusting B on level — would have understated the youth share by up to 8 points |

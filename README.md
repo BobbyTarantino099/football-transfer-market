@@ -37,10 +37,10 @@ is published.
 
 Two sources doing two different jobs. They are never joined at record level.
 
-| Source | Job | Period | Licence |
-|---|---|---|---|
-| [FIFA Global Transfer Report](https://inside.fifa.com/transfer-system/global-transfer-report) (FIFA TMS) | The decade-long series and the age axis | annual, 2011– | FIFA publication; aggregate figures transcribed with citation |
-| [`dcaribou/transfermarkt-datasets`](https://github.com/dcaribou/transfermarkt-datasets) | Deal-level detail: clubs, players, fees | 22/23–25/26 | CC0-1.0 |
+| Source | Job | Period | Volume used | Licence |
+|---|---|---|---|---|
+| [FIFA Global Transfer Report](https://inside.fifa.com/legal/football-regulatory/player-transfers/tms-reports) (FIFA TMS) | The decade-long series and the age axis | 2016–2025 market, 2018–2025 by age | 46 transcribed rows from 9 editions | FIFA publication; aggregate figures transcribed with citation, PDFs not redistributed |
+| [`dcaribou/transfermarkt-datasets`](https://github.com/dcaribou/transfermarkt-datasets) | Deal-level detail: clubs, players, fees | 22/23–25/26 | 6,716 priced deals, €37.4bn | CC0-1.0 |
 
 FIFA's report is the official **census** of international transfers, so it carries no survivorship
 bias and can anchor a decade of context — but it publishes aggregates only, so it can never name
@@ -59,8 +59,11 @@ cd football-transfer-market
 # 2. Dependencies
 pip install -r requirements.txt
 
-# 3. Download the raw data (not in the repo)
-#    See documentacion/fichas-de-fuente.md for exact URLs and filenames.
+# 3. No download needed: the raw data is in datos/crudos/.
+#    The Transfermarkt dataset upstream is refreshed weekly, so the snapshot used by
+#    the analysis is frozen here, with the SHA-256 of each file recorded in
+#    documentacion/fichas-de-fuente.md. To rebuild it against today's data:
+#      python notebooks/descargar.py     # the numbers will move; that is expected
 
 # 4. Run in order — each step consumes the previous one's output
 python notebooks/procesar.py    # cleaning  -> datos/limpios/
