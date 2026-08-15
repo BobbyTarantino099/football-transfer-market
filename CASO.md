@@ -5,7 +5,7 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 3 — Process (complete). Next: phase 4, Analyse.
+**Status:** Phase 4 — Analyse (complete). Next: phase 5, Share.
 **Last updated:** 2026-08-15
 
 ## 0. Choose (decision sheet)
@@ -340,12 +340,85 @@ with deletions.
 
 ## 4. Analyse
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-15
 
-- **Finding:** <the headline — the finding, not the topic. Same claim as `title` on the site.>
-- **Checks:** `notebooks/verificar.py` — <what each one rules out>
-- **Contradicted the initial hypothesis:** <yes/no — a "yes" is the most valuable outcome
-  of all, because it shows the conclusion wasn't forced>
+- **Contradicted the initial hypothesis:** **yes, on both axes.** The hypothesis recorded in §1
+  before any analysis said the gap was widening and the youth premium outgrowing the market.
+  Spending is *dis*concentrating, and there is no growing youth premium to be found.
+
+### Findings
+
+**H1 — The money is spreading out, not concentrating.** The ten largest buying clubs took 32.1%
+of European transfer spending in 22/23 and 26.7% in 25/26, while the number of clubs that buy at
+all rose from 339 to 382.
+
+- Alternative ruled out (V4): it is not an English phenomenon. Excluding English buyers the top-10
+  share still falls, 30.6% → 24.0%.
+- Alternative ruled out (V4b): it is not a four-season blip. FIFA's census shows clubs paying fees
+  up **44.7%** between 2018 and 2025 (839 → 1,214) and clubs receiving them up **49.1%**
+  (1,003 → 1,495). The market is widening in participants, on a decade of data.
+- Recalculated a second way (V2): identical to the decimal.
+
+**H2 — Being a selling club is a structural position, not a bad year.** Of the 350 clubs present
+in all four seasons, **202 (58%) were net sellers in three or more of them, and 96 in all four**;
+only 20 were never net sellers.
+
+- Alternative ruled out (V6a): not arithmetic inevitability. Under a null model with the same
+  marginal probability, 61 clubs would be net sellers four times out of four; 96 are. At the other
+  end, 5 would never be; 20 are. Both tails are over-represented, so roles persist rather than
+  rotating each summer.
+
+**H3 — A young player costs roughly what a peak-age one costs, and that ratio is not escalating.**
+The median fee for an 18–23 player sits around parity with a 24–29 player (0.94–1.25 depending on
+the season) and shows no upward movement in any specification or in either source.
+
+- This is the finding **as far as the evidence stretches**, and no further. An earlier reading —
+  "the ratio fell from 1.25 to 0.955" — did not survive V5b: that fall appears only when cutting by
+  season and depends on 22/23 being the highest of the seven observations. Cut by calendar year it
+  oscillates (1.111 → 0.933 → 1.063) with no trend.
+- Cross-checked in both sources (V1b). Levels differ because the universes do — FIFA sits below 1,
+  we sit slightly above — but neither escalates: FIFA 0.971 → 0.909, ours 1.07 → 1.072.
+
+**H4 — Inside the young bracket the market runs at two speeds.** Deals of €40m or more are 2–3% of
+all 18–23 transfers but take **22–26% of everything spent on the bracket**, while the 70% of deals
+below €5m account for barely 15%.
+
+- The buyers are few and mostly English: Chelsea €688m across 10 such deals, Liverpool €462m,
+  PSG €430m, Real Madrid €412m, Manchester United €406m. Seven of the top ten are English clubs.
+- This is where the original observation lands: the headline signings are real and concentrated,
+  but they sit on top of a long, cheap tail — and it is the tail that moves the aggregate.
+
+**H5 — A new buyer arrived mid-window.** Saudi Arabian clubs went from €9m in 22/23 to €565m in
+25/26, 5.4% of all European-market spending across the four seasons.
+
+### Checks — `notebooks/verificar.py`
+
+| | What it rules out | Outcome |
+|---|---|---|
+| V1 | That our youth share tracks the census | ⚠️ gap widens to 7.1 points in 2025 — **limitation, below** |
+| V1b | That H3 depends on our source | ✅ both sources agree the ratio does not escalate |
+| V2 | An error in the aggregation behind H1 | ✅ recalculated from deal level, identical |
+| V3 | A wrong denominator | ✅ every share sums to 100 within its own season |
+| V4 | That H1 is an English artefact | ✅ holds without England |
+| V4b | That H1 is a four-season blip | ✅ FIFA census, +44.7% buyers over eight years |
+| V5 | Effects too small to matter | ✅ −5.4 points (concentration), −3.6 (youth share) |
+| V5b | That H3 is an artefact of specification | ⚠️ it was — **the claim was narrowed accordingly** |
+| V6a | That H2 is arithmetic inevitability | ✅ both tails over-represented against the null model |
+| V6b | That H3 rides on one big buyer | ✅ excluding each season's largest buyer barely moves it |
+
+### What these data cannot answer
+
+- **Four seasons are not a trend.** Every claim about direction over time rests on FIFA's series,
+  never on ours. This is why H1 cites the census and H3 refuses to claim a fall.
+- **The youth spending share is not claimable in level or direction.** The two sources disagree,
+  and in 2025 the gap doubles to 7.1 points (V1) for reasons we cannot pin down. FIFA counts only
+  international transfers and we also count domestic ones, but that explains a constant gap, not a
+  growing one.
+- **The 2018→2019 jump cannot be opened up.** It is visible only in source A, which never names a
+  deal. Nobody can say with these sources which transfers caused it.
+- **Under-18s are not analysable here:** 2 to 7 priced deals per season. Any percentage computed on
+  that is noise with a decimal point.
+- **Nothing here is causal.** The case describes structure; it does not explain what moves it.
 
 ## 5. Share
 
@@ -395,3 +468,5 @@ from a gallery of charts: it shows what was discarded and why.>
 | 2026-08-15 | Queries as `.sql` files in `consultas/`, Python only as orchestrator | This is the case where SQL is the point; SQL hidden inside Python strings cannot be read or judged | Embedding the SQL in `procesar.py` like case 1 — simpler to run, unreadable as evidence |
 | 2026-08-15 | Fees cast to `DECIMAL`, regression checked in whole euros | Summing 6,716 floats moved the total by €1m and failed the check for a rounding artefact rather than a real fault | Keeping floats and loosening the check — would have hidden a genuine drift later |
 | 2026-08-15 | Outliers kept, skew handled with medians | The expensive young deals are the subject of the case, not noise in it | Trimming the top percentile — statistically tidier, and it would delete the phenomenon |
+| 2026-08-15 | H3 narrowed from "the ratio fell" to "the ratio does not escalate" | The fall only appears cutting by season and hangs on 22/23 being the highest of seven observations (V5b) | Publishing the fall — a better headline, and an artefact of specification |
+| 2026-08-15 | Trend claims sourced to FIFA, never to our four seasons | Four observations cannot carry a sentence containing "increasingly" | Claiming the trend from our own data — it points the same way, and would not have survived a reviewer |
