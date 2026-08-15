@@ -43,7 +43,7 @@ WHERE
 GROUP BY
   club_destino_nombre
 ORDER BY
-  gasto_eur DESC;
+  gasto_eur DESC, comprador;   -- el desempate hace el orden reproducible
 
 CREATE OR REPLACE VIEW m6_top_operaciones_jovenes AS
 SELECT
@@ -58,5 +58,5 @@ FROM
 WHERE
   edad <= 21
 ORDER BY
-  fee_eur DESC
+  fee_eur DESC, jugador
 LIMIT 20;

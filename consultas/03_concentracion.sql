@@ -61,4 +61,8 @@ FROM
   JOIN raw_competiciones AS co
     ON co.competition_id = cl.domestic_competition_id
 GROUP BY
+  co.country_name, u2.temporada
+-- Orden total: sin el desempate el CSV exportado sale en un orden distinto cada vez y
+-- git muestra un diff de 59 lineas donde no ha cambiado ni un numero.
+ORDER BY
   co.country_name, u2.temporada;

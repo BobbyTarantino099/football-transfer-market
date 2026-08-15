@@ -5,11 +5,10 @@
 #
 # Install:  pip install -r requirements.txt
 
-duckdb          # the analysis engine: every query in this case runs on DuckDB
-pandas          # procesar · analizar · verificar · graficos
-numpy           # procesar · analizar · verificar · graficos
+duckdb          # the analysis engine: procesar · analizar · verificar · graficos
+numpy           # graficos  (interpolating two curves onto a common grid)
 matplotlib      # graficos · estilo
 python-docx     # build_docx.py  (imported as `docx`)
 
-# Node dependencies live in notebooks/package.json (pptxgenjs, for build_pptx.js).
-# Install:  npm install --prefix notebooks
+# No pandas: the aggregation happens in SQL, so nothing here ever builds a DataFrame.
+# It came from the template and was removed after checking the imports above.

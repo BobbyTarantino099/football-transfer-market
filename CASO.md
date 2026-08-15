@@ -5,7 +5,7 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 4 — Analyse (complete). Next: phase 5, Share.
+**Status:** Phase 6 — Act (complete). Next: phase 7, Portfolio.
 **Last updated:** 2026-08-15
 
 ## 0. Choose (decision sheet)
@@ -478,9 +478,68 @@ repeat what the headline already said. A figure nobody looks at is not finished.
 
 ## 6. Act
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-15
 
-- **Recommendations:** <each one tied to evidence, with its limitations>
+Full cards, with impact, metric, risk and effort for each: `entregables/recomendaciones.md`.
+Executive summary: `entregables/resumen_ejecutivo.md`, built to `.docx` by
+`notebooks/build_docx.py`.
+
+### From finding to insight to recommendation
+
+| Finding | What it means for the fund | What to do |
+|---|---|---|
+| **H1** Top-10 buyers went from 32.1% to 26.7% of spending; 45% more clubs pay fees than in 2018 | Buying into the elite buys into a crowd. The scarce thing is not money to spend, it is a supply of players worth buying | **R1** |
+| **H2** 202 of 350 clubs are net sellers in ≥3 of 4 seasons; 96 in all four, against 61 by chance | A selling club is a durable position, not a bad year. Ajax (+€267m), Salzburg (+€234m), Lille (+€185m) do it every season. Chelsea (−€800m) and Manchester United (−€672m) never do | **R1** |
+| **H3** The 18-23 / 24-29 price ratio sits at parity and does not escalate, in both sources | The market does not pay a premium for youth. Any club paying one is transferring value to the seller for free | **R2** |
+| **H4** 2.3% of young-player deals take 23.8% of the bracket's money; 71% are under €5m and add up to 15% | These are two different businesses under one label. A club that drifts between them competes badly in both | **R3** |
+| **H5** Saudi clubs went from €9m to €565m in four seasons | A new exit may be opening for players over 28, who used to depreciate with no buyer | Future exploration, not a recommendation: four seasons cannot tell a structural change from a spending cycle |
+
+### Recommendations, ranked by impact against effort
+
+1. **R1 — Put the next tranche into a persistent net-selling club in a mid-tier league, not an
+   elite one.** Evidence: H2 and H1. Impact high, effort medium.
+2. **R2 — Cap purchase prices against the market's price band for the role, and write into the
+   mandate that age carries no premium.** Evidence: H3. Impact high, effort low — it is a policy,
+   not a project.
+3. **R3 — Make each club pick its lane inside the young-player market: cheap volume or elite few.**
+   Evidence: H4. Impact medium, effort medium.
+
+### Limitations, stated where a reader will find them
+
+- **Four seasons of deal-level data.** Every claim about direction over time rests on FIFA's
+  census, not on ours. R1 leans on a role that is stable *within* those four seasons.
+- **No claim about the youth spending share**, in level or direction: the two sources disagree and
+  the gap doubles in 2025 without an explanation we can defend.
+- **Nothing here is causal.** The case describes how the market is structured. It does not explain
+  what moves it, and no recommendation assumes it does.
+- **Prices, not value.** We never observe whether a signing worked on the pitch — no performance
+  data enters this design — so "cheap" here means cheap to buy, not good value.
+- **Under-18s are not analysable** at 2–7 priced deals a season.
+
+### Data that would strengthen this
+
+- **Club accounts** (wages, amortisation, revenue): would turn "net seller" into "profitable
+  seller", which is the question a fund actually has.
+- **A longer deal-level series free of survivorship bias** — FIFA TMS microdata, not public.
+- **Sell-on clauses and add-ons.** FIFA reports over half of permanent deals now carry a sell-on
+  fee; headline prices therefore understate what a selling club eventually collects.
+- **Squad minutes by age**, to tell a developing club from one that merely sells.
+
+### Next steps
+
+1. Reconcile the 2025 divergence against the census: is it Saudi buying, domestic deals, or
+   coverage? It decides whether the youth share becomes claimable.
+2. Repeat the persistence measure over the next two windows: three points would begin to separate
+   a structural role from a cycle.
+3. Price the sell-on clause: if half of deals carry one, the seller's real revenue is not the fee.
+
+### What this case demonstrates that `steam-price-reception` does not
+
+SQL as the primary tool, longitudinal data, a sport/finance domain, and reconciling an official
+census against a scraped dataset instead of trusting a single source. And the one that matters
+most: **a hypothesis written down before the analysis and contradicted by it**, which is the
+evidence that the conclusion was not forced.
+
 - **Before publishing:** `bash scripts/verificar-rutas.sh` must pass.
 
 ## 7. Portfolio
