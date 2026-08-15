@@ -5,8 +5,8 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 2 — Prepare (complete). Next: phase 3, Process.
-**Last updated:** 2026-08-14
+**Status:** Phase 3 — Process (complete). Next: phase 4, Analyse.
+**Last updated:** 2026-08-15
 
 ## 0. Choose (decision sheet)
 
@@ -237,7 +237,7 @@ the oldest and most expensive, while the deals it discards are the cheap purchas
 from clubs outside the covered competitions — the exact phenomenon under study. So:
 
 - **U1** — at least one club identified and European. Basis for M3, M4, M5.
-  **6,716 deals · €37,435m** across the four seasons.
+  **6,716 deals · €37,436m** across the four seasons.
 - **U2** — both clubs identified, at least one European. Basis for M1 and M2, which have to
   attribute spend to a named club. **5,109 deals · €35,414m**, i.e. 94.6% of U1's money.
 
@@ -310,10 +310,33 @@ young-player outliers within 22/23–25/26, where source B has deal-level detail
 
 ## 3. Process
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-15
 
-Every transformation goes in `bitacora-limpieza.md`, with its rationale. Raw data is never
-modified in place: each transformation produces a new file.
+Every transformation is in `bitacora-limpieza.md`, with its rationale and its discarded
+alternative. Raw data is never modified in place.
+
+- **Tool:** SQL on DuckDB. Four tables to join, a window to select, a categorisation to apply —
+  and a rebuild that needs no server and no account. Queries live in `consultas/` as real `.sql`
+  files, not inside Python strings, so they can be read and judged on their own.
+- **Pipeline:** `python notebooks/procesar.py` → `consultas/01_construir_base.sql` (faithful load)
+  → `consultas/02_limpiar.sql` (window, population, universes, age bands).
+- **Output:** `datos/limpios/football-transfer-market.duckdb` — gitignored and regenerated, since
+  it is derived from a snapshot that is versioned.
+
+**Reconciliation.** 175,165 − 109,038 (outside the window) − 15 (dated after the snapshot) −
+57,632 (no usable fee) − 0 (no date of birth) = **8,480 priced deals**, of which 6,716 are U1 and
+5,109 U2. It reconciles exactly, and the script fails loudly if it ever stops doing so.
+
+**Nothing had to be corrected.** No duplicates, no impossible ages, no self-transfers, no stray
+whitespace, no club under two ids. Every transformation here is a *selection*, not a repair — and
+the checks are recorded precisely because they came back empty. Two things did need deciding:
+DuckDB compares strings case-sensitively (verified, or the European filter would have silently
+emptied), and fees are cast to `DECIMAL` rather than float, because summing 6,716 floats moved the
+total by €1m.
+
+**Outliers were investigated and kept.** Bellingham €127m, Gvardiol €90m, Højlund €79.8m: real
+deals, and the subject of the case rather than noise in it. The skew is handled with medians, not
+with deletions.
 
 ## 4. Analyse
 
@@ -369,3 +392,6 @@ from a gallery of charts: it shows what was discarded and why.>
 | 2026-08-14 | FIFA age series starts in 2018 | The 2016 edition reports age year by year, not in bands, and 2017 publishes no fee by band | Reconstructing 2016–17 from a different structure — two more years, both invented |
 | 2026-08-14 | "European" comes from the source's `confederation` field | A hand-built UEFA table agreed with it exactly, so it was deleted rather than kept as a second thing to maintain | Keeping our own country table — one more artefact to drift |
 | 2026-08-14 | Level claims from source A, "who" claims from source B | B's youth share runs 4–8 points below the census every year, because it also counts domestic deals | Trusting B on level — would have understated the youth share by up to 8 points |
+| 2026-08-15 | Queries as `.sql` files in `consultas/`, Python only as orchestrator | This is the case where SQL is the point; SQL hidden inside Python strings cannot be read or judged | Embedding the SQL in `procesar.py` like case 1 — simpler to run, unreadable as evidence |
+| 2026-08-15 | Fees cast to `DECIMAL`, regression checked in whole euros | Summing 6,716 floats moved the total by €1m and failed the check for a rounding artefact rather than a real fault | Keeping floats and loosening the check — would have hidden a genuine drift later |
+| 2026-08-15 | Outliers kept, skew handled with medians | The expensive young deals are the subject of the case, not noise in it | Trimming the top percentile — statistically tidier, and it would delete the phenomenon |

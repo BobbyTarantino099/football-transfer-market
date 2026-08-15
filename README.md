@@ -26,7 +26,8 @@ is published.
 ├── documentacion/
 │   ├── diccionario-de-datos.md
 │   └── fichas-de-fuente.md       # ROCCC assessment per source
-├── notebooks/                    # procesar · analizar · verificar · graficos
+├── consultas/                    # the SQL that does the work, as readable .sql files
+├── notebooks/                    # Python that orchestrates the SQL and draws the figures
 ├── salidas/
 │   ├── graficos/                 # the figures used on the site
 │   └── tablas/                   # the aggregate tables that cross to the site
@@ -66,11 +67,15 @@ pip install -r requirements.txt
 #      python notebooks/descargar.py     # the numbers will move; that is expected
 
 # 4. Run in order — each step consumes the previous one's output
-python notebooks/procesar.py    # cleaning  -> datos/limpios/
+python notebooks/procesar.py    # runs consultas/01 and 02 -> datos/limpios/*.duckdb
 python notebooks/analizar.py    # analysis  -> salidas/tablas/
 python notebooks/verificar.py   # the analysis checks
 python notebooks/graficos.py    # the figures -> salidas/graficos/
 ```
+
+`procesar.py` prints the row reconciliation for every transformation and then checks the result
+against the figures that closed phase 2. It exits with an error if they do not match: a pipeline
+that finishes without complaining is not the same as a pipeline that is correct.
 
 Before publishing any result:
 
