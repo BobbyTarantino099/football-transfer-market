@@ -17,7 +17,18 @@ Copiar este archivo (y la carpeta `fuentes/`) a `notebooks/` del caso y usarlo a
 
 Ya viene en la plantilla: no se copia a mano por caso ni se edita por caso. Si una
 figura necesita algo que no esta aqui, se anade a este archivo en la plantilla y
-baja a los casos siguientes — asi la identidad visual no diverge entre casos.
+baja a los casos siguientes — asi el catalogo de formas crece para todos.
+
+**Lo que si cambia por caso es el color.** `aplicar()` acepta acento, contraste y
+rampa, de modo que cada caso declara su tema en una linea y hereda todo lo demas:
+
+    estilo.aplicar(acento="#0f7d3f", contra="#7b4bb0", rampa=[...])
+
+La frontera esta puesta a proposito. El color distingue un caso de otro y demuestra
+que la visualizacion se adapta al asunto; la composicion —cabecera de tres niveles,
+tipografia, ritmo vertical, nota de fuente, firma— no se toca, porque es lo que hace
+que seis casos parezcan un cuerpo de trabajo y no seis encargos sueltos. Cambia el
+color y sigue siendo tuyo; cambia la maqueta y parece de otra persona.
 
 Por qué existe: el anexo de visualización pedía "un color protagonista" sin decir
 cuál, y cada caso reinventaba la composición. El resultado eran figuras correctas
@@ -120,8 +131,32 @@ def _prop(peso: str, tam: float) -> dict:
     return {"fontproperties": p}
 
 
-def aplicar() -> None:
-    """Registra la tipografía y fija los rcParams de la identidad."""
+def aplicar(acento=None, contra=None, rampa=None) -> None:
+    """Registra la tipografía y fija los rcParams de la identidad.
+
+    Los tres argumentos opcionales son el **tema del caso**. Sin ellos queda el
+    tema por defecto, así que un caso que no declare nada sigue saliendo igual.
+
+    Lo que un caso puede cambiar es el color; lo que no, la composición. La
+    cabecera de tres niveles, la tipografía, el ritmo vertical y la firma son lo
+    que hace reconocible el trabajo entre casos: con otro color sigue siendo del
+    mismo autor, con otra maqueta parece de otro. Un caso que necesite algo que
+    no está aquí lo añade a ESTE archivo en la plantilla, no a su copia.
+
+        estilo.aplicar(acento='#0f7d3f', contra='#7b4bb0', rampa=[...])
+
+    Toda paleta nueva se valida antes con el verificador de la skill `dataviz`
+    (banda de luminosidad, suelo de croma, separación para daltonismo, contraste)
+    y las rampas, además, por monotonicidad de luminancia. No se eligen a ojo.
+    """
+    global ACENTO, CONTRA, RAMPA
+    if acento:
+        ACENTO = acento
+    if contra:
+        CONTRA = contra
+    if rampa:
+        RAMPA = list(rampa)
+
     for peso, ruta in _ARCHIVOS.items():
         if ruta.exists():
             fm.fontManager.addfont(str(ruta))
@@ -247,8 +282,14 @@ def guardar(fig, ruta, dpi=200) -> None:
 # Ayudas de dibujo
 # ---------------------------------------------------------------------------
 
-def destacar(categorias, protagonistas, acento=ACENTO, resto=CONTEXTO):
-    """Contraste dirigido: acento para las protagonistas, gris para el resto."""
+def destacar(categorias, protagonistas, acento=None, resto=None):
+    """Contraste dirigido: acento para las protagonistas, gris para el resto.
+
+    Los colores se resuelven aquí y no en la firma: un default evaluado al
+    importar el módulo congelaría el color antes de que el caso declare su tema.
+    """
+    acento = acento or ACENTO
+    resto = resto or CONTEXTO
     p = set(protagonistas)
     return [acento if c in p else resto for c in categorias]
 
@@ -330,13 +371,19 @@ def anotar(ax, texto, xy, xytexto, color=TINTA_SUAVE, tam=9, flecha=True):
 
 
 def dumbbell(ax, categorias, desde, hasta, etiqueta_desde=None, etiqueta_hasta=None,
-             color_desde=CONTEXTO, color_hasta=ACENTO, destacadas=None):
+             color_desde=None, color_hasta=None, destacadas=None):
     """Dumbbell: dos estados por categoría, unidos por una barra.
 
     Es la forma correcta cuando la pregunta es "cuánto cambia de A a B por
     categoría". Unas barras agrupadas obligan a comparar dos longitudes desde
     ejes distintos; el dumbbell muestra la diferencia como una distancia.
+
+    Cuidado con `destacadas`: atenúa las filas no elegidas hasta dejar sus dos
+    extremos en gris, y entonces deja de verse cuál es cuál. Úsalo solo cuando
+    la comparación de esas filas de verdad no importe.
     """
+    color_desde = color_desde or CONTEXTO
+    color_hasta = color_hasta or ACENTO
     y = range(len(categorias))
     destacadas = set(destacadas or [])
     for i, (c, a, b) in enumerate(zip(categorias, desde, hasta)):
@@ -360,6 +407,69 @@ def dumbbell(ax, categorias, desde, hasta, etiqueta_desde=None, etiqueta_hasta=N
     if etiqueta_desde and etiqueta_hasta:
         ax.scatter([], [], s=62, color=color_desde, label=etiqueta_desde)
         ax.scatter([], [], s=72, color=color_hasta, label=etiqueta_hasta)
+
+
+def slope(ax, categorias, izquierda, derecha, etiqueta_izq, etiqueta_der,
+          colores=None, formato="{:.2f}"):
+    """Slope: dos momentos por serie, con etiqueta directa en cada extremo.
+
+    Se usa cuando importa la posición en cada momento y el sentido del cambio,
+    no la trayectoria intermedia. Frente a una línea de muchos puntos, elimina
+    el ruido de lo que pasó en medio; frente a un dumbbell, conserva el nivel
+    de ambos extremos en un eje vertical legible.
+
+    Sin leyenda a propósito: cada serie lleva su nombre escrito al lado, que es
+    un salto de vista menos.
+    """
+    colores = colores or [ACENTO, CONTRA, CONTEXTO]
+    for i, (cat, a, b) in enumerate(zip(categorias, izquierda, derecha)):
+        color = colores[i % len(colores)]
+        ax.plot([0, 1], [a, b], color=color, linewidth=2.6, zorder=2)
+        ax.scatter([0, 1], [a, b], s=70, color=color, zorder=3,
+                   edgecolor=PAPEL, linewidth=1.6)
+        ax.text(-0.045, a, f"{formato.format(a)}  {cat}", va="center", ha="right",
+                color=color, **_prop("medio", 10))
+        ax.text(1.045, b, formato.format(b), va="center", ha="left",
+                color=color, **_prop("medio", 10))
+
+    ax.set_xlim(-0.62, 1.28)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels([etiqueta_izq, etiqueta_der])
+    ax.spines["bottom"].set_visible(False)
+    ax.tick_params(axis="y", left=False)
+
+
+def barras_divergentes(ax, categorias, valores, color_positivo=None,
+                       color_negativo=None, formato="{:+.0f}"):
+    """Barras horizontales centradas en cero: desviación respecto de una referencia.
+
+    Cuando el hallazgo *es* la diferencia contra un valor esperado, dibujar las
+    dos series por separado obliga al lector a restar de cabeza. Aquí la resta
+    ya está hecha y el cero es el eje.
+    """
+    color_positivo = color_positivo or ACENTO
+    color_negativo = color_negativo or CONTRA
+    y = range(len(categorias))
+    colores = [color_positivo if v >= 0 else color_negativo for v in valores]
+
+    ax.barh(list(y), valores, height=0.52, color=colores, zorder=2)
+    ax.axvline(0, color=TINTA_SUAVE, linewidth=1.1, zorder=3)
+    ax.set_yticks(list(y))
+    ax.set_yticklabels(categorias)
+    ax.invert_yaxis()
+    ax.grid(axis="x", zorder=0)
+    ax.set_axisbelow(True)
+
+    tope = max(abs(v) for v in valores)
+    holgura = tope * 0.04
+    for i, v in enumerate(valores):
+        ax.text(v + (holgura if v >= 0 else -holgura), i, formato.format(v),
+                va="center", ha="left" if v >= 0 else "right",
+                color=TINTA, **_prop("medio", 9.5))
+
+    # Sitio para las cifras a ambos lados: sin este margen la etiqueta de la barra
+    # más larga se sale del eje y se monta sobre el rótulo de la categoría.
+    ax.set_xlim(-tope * 1.22, tope * 1.22)
 
 
 def _color_celda(valor, vmin, vmax):
