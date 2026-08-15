@@ -5,8 +5,8 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 0 — Choose (complete)
-**Last updated:** 2026-08-13
+**Status:** Phase 1 — Ask (complete). Next: phase 2, Prepare.
+**Last updated:** 2026-08-14
 
 ## 0. Choose (decision sheet)
 
@@ -36,12 +36,8 @@ superstar record, and for players aged 17–21 still in development.
 
 Two cuts of one table, not two cases: **who pays whom**, and **what is paid by age**.
 
-- **Hypothesis, recorded before any analysis:** the gap is widening and the youth premium is
-  outgrowing the market.
-- **The trap this design avoids:** in nominal terms "transfers got more expensive" is true by
-  construction — the whole market grew. Every figure must be expressed relative to its own
-  season's market. If the youth premium dissolves once normalised, that is the finding, and it
-  contradicts the hypothesis above. Which is why the hypothesis is written down here, first.
+The hypothesis and the measurement trap it has to survive are recorded in §1, where phase 4 will
+look for them.
 
 ### Scope of the universe
 
@@ -128,26 +124,80 @@ the question is about what gets paid.
 
 ## 1. Ask
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-14
 
-- **Business problem:** <the decision that cannot be made today>
-- **Analytical question (SMART):** <specific, measurable, with its filters and controls stated>
-- **Decision this unlocks:** <what changes once it is answered>
-- **Problem type:** <find patterns · predict · categorize · spot something unusual ·
-  identify themes · discover connections — exactly one, and it must match `problemType`
-  in the site's front-matter>
+- **Business problem:** the fund is about to commit capital to a football club and cannot say which
+  end of the market pays. Buying into a developing, net-selling club only makes sense if selling
+  talent is still where the margin sits; buying into an elite one only makes sense if the money
+  really is concentrating there.
+
+- **Analytical question (SMART):**
+
+  > Across the European transfer market, and over the four windows from 2022/23 to 2025/26, is
+  > spending concentrating on fewer buying clubs, and is a larger share of it going to players
+  > under 24?
+
+  Broken into three measurable parts, because one compound question cannot be answered at once:
+
+  - **A. Concentration.** What share of each season's total spending is captured by the ten
+    largest buying clubs, and does that share move across the four windows?
+  - **B. Persistence of role.** How many clubs are net sellers in three or more of the four
+    seasons? A role that repeats is a structural position; a role that alternates is noise.
+  - **C. The age axis.** What share of each season's spending goes to each FIFA age band, and how
+    does the median fee for an 18–23 player compare with a 24–29 one?
+
+- **Decision this unlocks:** which link of the chain gets the next tranche — a net-selling
+  developer, a mid-table club or an elite buyer — and whether the price paid for young players
+  justifies funding an academy over buying a squad.
+
+- **Problem type:** `find patterns`.
+
+- **Initial hypothesis, written before any analysis:** the gap is widening — spending concentrates
+  on fewer buyers — and the share going to young players is growing faster than the market itself.
+
+- **The measurement trap this design has to survive:** in nominal terms "transfers got more
+  expensive" is true by construction, because the whole market grew. Every figure here is therefore
+  a **share of its own season's total** (M5), which makes nominal growth incapable of passing for a
+  finding. If the youth premium dissolves once normalised, that is the result, and phase 4 records
+  it as contradicting the line above.
+
+- **Out of scope** — stated now so it cannot be negotiated later:
+  - *Why* prices move — broadcast money, state ownership, accounting amortisation. This case
+    describes the structure; it does not explain it.
+  - Any prediction or causal claim.
+  - Women's football: source B covers it too thinly to say anything honest.
+  - Loans and free transfers (see §0: they cannot be told apart upstream).
+  - Whether a signing worked out on the pitch — no performance data enters this design.
+  - The 26/27 window, open while this is written: it is the hook, never a data point.
+  - Fee-to-market-value multiples: Transfermarkt valuations move on transfer rumours, so the
+    multiple would partly be measuring its own input.
 
 - **Stakeholders:**
 
 | Who | What they decide / need | Format |
 |---|---|---|
-| | | |
+| Investment committee of the fund *(primary)* | Approves where the next tranche goes. Needs to know whether the net-seller role is structural, and whether the youth premium is real once normalised | 8–10 slides + a one-page summary |
+| Sporting directors of the fund's clubs *(secondary)* | Execute the sales. Need the age band where price peaks | Table by age band |
+| Risk function of the fund *(secondary)* | Signs off the assumptions. Needs the coverage limits stated plainly, not buried | Technical note — this file and `bitacora-limpieza.md` |
+
+- **Analysis population:** priced transfers only — `transfer_fee > 0`, `transfer_date` not in the
+  future, and at least one club belonging to a European association. A season runs 1 July to
+  30 June. Age is completed years at `transfer_date`.
 
 - **Metrics:**
 
 | Metric | Formula | Unit | Granularity | Window |
 |---|---|---|---|---|
-| | | | | |
+| **M1 · Top-10 buyer concentration** | rank clubs by inbound spend; Σ fees of the top 10 ÷ Σ fees of all deals × 100 | % of season spend | season | 22/23–25/26 · source B |
+| **M2 · Net-seller persistence** | `net(club, season) = fees paid − fees received`; count seasons with `net < 0`, out of 4. Eligible clubs are those with at least one priced deal in **each** of the four seasons — a club absent from a season would otherwise score `net = 0` there and read as "not a seller", which is not the same thing | seasons (0–4) | club | 22/23–25/26 · source B |
+| **M3 · Age-band spend share** | Σ fees of the band ÷ Σ fees of the season × 100. Bands: FIFA `<18 / 18–23 / 24–29 / 30+`, plus a finer `<18 / 18–20 / 21–23` inside the young block | % of season spend | season × band | 2015–2025 · source A; 22/23–25/26 · source B |
+| **M4 · Youth price ratio** | median fee of 18–23 ÷ median fee of 24–29. Median, not mean: FIFA reports 3.8% of deals carrying nearly half of all spending, so a mean would track a handful of moves | ratio | season | 22/23–25/26 · source B |
+| **M5 · Season market size** *(control, not a finding)* | Σ fees of the season | EUR | season | both sources |
+
+M3 is the metric that answers the question and the one comparable against the official census;
+M4 says what a typical young player costs against a typical peak-age one. M1 and M2 answer the
+buyer/seller half — and M2 is the one that actually decides where capital goes, since a role held
+in three or four seasons out of four is a position, not a coincidence.
 
 ## 2. Prepare
 
@@ -210,3 +260,7 @@ from a gallery of charts: it shows what was discarded and why.>
 | 2026-08-13 | Source B restricted to 22/23–25/26 | Coverage before 22/23 is biased differentially by age, which is the very axis under study | The full 2010–2026 range; a 2016 cut-off — bias persists there too |
 | 2026-08-13 | Analysis population is `fee > 0` | Loans, free moves and unknown fees are all collapsed to 0/null upstream and cannot be told apart | Treating 0 as a genuine free transfer — would mix loans into price statistics |
 | 2026-08-13 | `ewenme/transfers` rejected | No licence declared, and coverage stops at 22/23 | It captures by season, so it has no survivorship bias — the better shape, unusable terms |
+| 2026-08-14 | FIFA age bands as the main axis, with a finer cut inside the young block | Only official bands let our number be checked against the census; the fine cut keeps the under-21 question answerable | Own bands (17–21 / 22–24 / …) — sharper focus, but nothing would have been comparable |
+| 2026-08-14 | The gap is measured as concentration **plus** persistence of role, not net spend alone | Net spend describes clubs; persistence describes the structure, which is what a capital decision turns on | A Gini or HHI — more rigorous, but needs translating for an investment committee, and translation costs minutes on stage |
+| 2026-08-14 | Median, not mean, for fee comparisons | FIFA reports 3.8% of deals carrying nearly half of global spending; a mean would track a handful of moves | The mean — easier to explain, and wrong here |
+| 2026-08-14 | Fee-to-market-value multiples left out of scope | Transfermarkt valuations react to transfer rumours, so the multiple would partly measure its own input | Using them as the premium metric — the most intuitive framing, and circular |
