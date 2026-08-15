@@ -5,7 +5,7 @@
 
 # Case: The football transfer market — who pays whom, and what age costs
 
-**Status:** Phase 6 — Act (complete). Next: phase 7, Portfolio.
+**Status:** ✅ Complete — all 8 phases closed. Published 2026-08-15.
 **Last updated:** 2026-08-15
 
 ## 0. Choose (decision sheet)
@@ -544,12 +544,22 @@ evidence that the conclusion was not forced.
 
 ## 7. Portfolio
 
-**Status:** ⬜ open
+**Status:** ✅ closed 2026-08-15 — **published**
 
-- Hand over to the site: front-matter Markdown (template 7 of `plantillas.md`) plus figures and
-  aggregate tables. Only that crosses; this file stays here and is linked.
-- If an aggregate the site needs weighs megabytes, the aggregation is incomplete — go back to
-  phase 4 and summarise further.
+- **Live at** [juanesportfolio.com/cases/football-transfer-market](https://juanesportfolio.com/cases/football-transfer-market/),
+  from `site/src/content/cases/football-transfer-market/`.
+- The contract validated it: `npm run build` passes with the full front-matter and the seven body
+  sections in the fixed order. `hero` is the diverging-bars figure rather than the opening
+  concentration curve — the curve carries the argument, but its two lines nearly touch and a card
+  is read at thumbnail size.
+- **860 KB of aggregate figures crossed**, nothing else. Raw and intermediate data stay here and
+  the repository is linked as the evidence layer.
+- Checked in a browser, not only in the HTML: the page renders, both cases appear on the home with
+  this one first, and the *What this demonstrates* block is **not** duplicated — the contract warns
+  that shipping the front-matter field alongside the body section once printed it twice.
+
+**Still open, and they are Juanes's to do, not the analysis's:** reading it on a real phone,
+rehearsing the three-minute script out loud, and asking someone outside for feedback.
 
 ## Decision log
 
